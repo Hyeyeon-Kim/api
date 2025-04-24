@@ -15,28 +15,87 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
 const user_schema_1 = require("./entities/user.schema");
+const mongoose_2 = require("mongoose");
+const response_user_dto_1 = require("./dtos/response-user.dto");
+const user_not_found_1 = require("./exceptions/user-not-found");
+const firebase_admin_1 = require("firebase-admin");
+const user_already_joined_exception_1 = require("./exceptions/user-already-joined.exception");
 let UserService = class UserService {
     userModel;
     constructor(userModel) {
         this.userModel = userModel;
     }
-    async create(data) {
-        const newUser = new this.userModel(data);
-        return newUser.save();
+    async findOneByFirebase(userid) {
+        const user = await this.userModel
+            .findOne({
+            uid: userid,
+        })
+            .catch(() => {
+            throw new user_not_found_1.UserNotFoundException(userid);
+        });
+        if (user == null) {
+            throw new user_not_found_1.UserNotFoundException(userid);
+        }
+        return new response_user_dto_1.UserResponseDto(user);
     }
-    async findAll() {
-        return this.userModel.find().exec();
+    async signinForTest() {
+        const user = await this.userModel.findOne({
+            uid: "test",
+        });
+        if (user) {
+            throw new user_already_joined_exception_1.UserAlredyJoinedException("test");
+        }
+        await new this.userModel({
+            uid: "test",
+            email: "test@gmail.com",
+            user_name: "test",
+            user_image: "https://lh3.googleusercontent.com/a/ACg8ocJQlf3Lsc7V8un9AJSOx7ttgxL5j2Lh49puSWOpQ3xLA6j1ew=s96-c",
+        }).save();
     }
-    async findOne(id) {
-        return this.userModel.findById(id).exec();
+    async signin(token) {
+        token = token.replace("Bearer ", "");
+        const firebaseUser = await (0, firebase_admin_1.auth)()
+            .verifyIdToken(token, true)
+            .catch((err) => {
+            throw new common_1.UnauthorizedException(err.message);
+        });
+        const user = await this.userModel.findOne({
+            uid: firebaseUser.uid,
+        });
+        if (user) {
+            throw new user_already_joined_exception_1.UserAlredyJoinedException(firebaseUser.uid);
+        }
+        const createdUser = new this.userModel({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            user_name: firebaseUser.name,
+        });
+        await createdUser.save();
     }
-    async update(id, data) {
-        return this.userModel.findByIdAndUpdate(id, data, { new: true }).exec();
+    async deleteUser(userId) {
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+            throw new user_not_found_1.UserNotFoundException(userId.toString());
+        }
+        await (0, firebase_admin_1.auth)().deleteUser(user.uid);
+        await this.userModel.deleteOne({ _id: userId });
     }
-    async remove(id) {
-        return this.userModel.findByIdAndDelete(id).exec();
+    async updateUser(userId, userInfo) {
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+            throw new user_not_found_1.UserNotFoundException(userId.toString());
+        }
+        await (0, firebase_admin_1.auth)().updateUser(user.uid, {
+            displayName: userInfo.user_name,
+            email: userInfo.email,
+        });
+        await this.userModel.updateOne({ _id: userId }, {
+            $set: {
+                user_name: userInfo.user_name,
+                email: userInfo.email,
+            },
+        });
     }
 };
 exports.UserService = UserService;

@@ -1,54 +1,54 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
+  Headers,
   Patch,
   Param,
   Delete,
-} from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserService } from './user.service';
-import { User } from './entities/user.schema';
+} from "@nestjs/common";
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
+import { GetUser } from "./decorators/get-user.decorator";
+import { UserService } from "./user.service";
+import { UserInfo } from "./entities/user.schema";
+import { Types } from "mongoose";
+import IUser from "./interfaces/user.interface";
+import { Public } from "src/common/public.decorator";
 
-@ApiTags('users')
-@Controller('users')
+@ApiTags("users")
+@Controller("users")
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, description: 'User created successfully.' })
   @Post()
-  create(@Body() data: Partial<User>) {
-    return this.userService.create(data);
+  @Public()
+  @ApiOperation({ summary: "유저 생성" })
+  @ApiCreatedResponse({ description: "유저 생성" })
+  signin(@Headers("authorization") authorization: string) {
+    if (process.env.NODE_ENV === "test") {
+      return this.userService.signinForTest();
+    }
+    return this.userService.signin(authorization);
   }
 
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Return an array of users.' })
-  @Get()
-  findAll() {
-    return this.userService.findAll();
+  @ApiOperation({ summary: "Update a user by ID" })
+  @ApiResponse({ status: 200, description: "User updated successfully." })
+  @ApiBearerAuth()
+  @Patch()
+  update(@GetUser() userDto: IUser, @Body() data: Partial<UserInfo>) {
+    return this.userService.updateUser(userDto.id, data);
   }
 
-  @ApiOperation({ summary: 'Get a user by ID' })
-  @ApiResponse({ status: 200, description: 'Return a single user.' })
-  @ApiResponse({ status: 404, description: 'User not found.' })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
-  }
-
-  @ApiOperation({ summary: 'Update a user by ID' })
-  @ApiResponse({ status: 200, description: 'User updated successfully.' })
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() data: Partial<User>) {
-    return this.userService.update(id, data);
-  }
-
-  @ApiOperation({ summary: 'Delete a user by ID' })
-  @ApiResponse({ status: 200, description: 'User deleted successfully.' })
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+  @ApiOperation({ summary: "Delete a user by ID" })
+  @ApiResponse({ status: 200, description: "User deleted successfully." })
+  @ApiBearerAuth()
+  @Delete()
+  remove(@GetUser() userDto: IUser) {
+    return this.userService.deleteUser(userDto.id);
   }
 }

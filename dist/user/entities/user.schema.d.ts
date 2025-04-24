@@ -1,9 +1,8 @@
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, Types } from "mongoose";
 export type UserDocument = HydratedDocument<User>;
 export declare class User {
     id: Types.ObjectId;
     uid: string;
-    status: string;
     email: string;
     user_name: string;
 }
@@ -18,6 +17,6 @@ export declare const UserSchema: import("mongoose").Schema<User, import("mongoos
 }>;
 declare const UserInfo_base: import("@nestjs/common").Type<Pick<User, "email" | "user_name">>;
 export declare class UserInfo extends UserInfo_base {
-    constructor(partial: Partial<User>);
+    constructor(partial: User);
 }
 export {};

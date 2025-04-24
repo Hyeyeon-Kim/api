@@ -16,7 +16,7 @@ const passport_firebase_jwt_1 = require("passport-firebase-jwt");
 const firebase_admin_1 = require("firebase-admin");
 const user_service_1 = require("../../user/user.service");
 const core_1 = require("@nestjs/core");
-let FirebaseAuthStrategy = class FirebaseAuthStrategy extends (0, passport_1.PassportStrategy)(passport_firebase_jwt_1.Strategy, 'firebase-auth') {
+let FirebaseAuthStrategy = class FirebaseAuthStrategy extends (0, passport_1.PassportStrategy)(passport_firebase_jwt_1.Strategy, "firebase-auth") {
     reflector;
     userservice;
     constructor(reflector, userservice) {
@@ -27,9 +27,8 @@ let FirebaseAuthStrategy = class FirebaseAuthStrategy extends (0, passport_1.Pas
         this.userservice = userservice;
     }
     async validate(token) {
-        if (process.env.NODE_ENV === 'test' ||
-            process.env.NODE_ENV === 'development') {
-            return await this.userservice.findOneByFirebase('test');
+        if (process.env.NODE_ENV === "test") {
+            return await this.userservice.findOneByFirebase("test");
         }
         const firebaseUser = await (0, firebase_admin_1.auth)()
             .verifyIdToken(token, true)

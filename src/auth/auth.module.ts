@@ -1,10 +1,10 @@
-import { UserModule } from 'src/user/user.module';
-import { forwardRef, Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
+import { UserModule } from "src/user/user.module";
+import { forwardRef, Module } from "@nestjs/common";
+import { PassportModule } from "@nestjs/passport";
 
-import { FirebaseAuthStrategy } from './stategies/firebase-auth.stategies';
-import { FirebaseAuthGuard } from './guard/firebase-auth.guard';
-import { APP_GUARD } from '@nestjs/core';
+import { FirebaseAuthStrategy } from "./stategies/firebase-auth.stategies";
+import { FirebaseAuthGuard } from "./guard/firebase-auth.guard";
+import { APP_GUARD } from "@nestjs/core";
 
 @Module({
   imports: [forwardRef(() => UserModule), PassportModule],

@@ -16,15 +16,14 @@ const swagger_1 = require("@nestjs/swagger");
 let User = class User {
     id;
     uid;
-    status;
     email;
     user_name;
 };
 exports.User = User;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'User ID(monogodb)',
-        example: '60f6e4b0b5b4b4001f9f4f5b',
+        description: "User ID(monogodb)",
+        example: "60f6e4b0b5b4b4001f9f4f5b",
         type: String,
     }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
@@ -32,32 +31,24 @@ __decorate([
 __decorate([
     (0, mongoose_1.Prop)({ type: String, required: true }),
     (0, swagger_1.ApiProperty)({
-        example: 'google-oauth2|123456789012345678901',
-        description: 'User ID(firebase)',
+        example: "google-oauth2|123456789012345678901",
+        description: "User ID(firebase)",
     }),
     __metadata("design:type", String)
 ], User.prototype, "uid", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ default: '활동중' }),
-    (0, swagger_1.ApiProperty)({
-        example: '활동중',
-        description: 'User 상태',
-    }),
-    __metadata("design:type", String)
-], User.prototype, "status", void 0);
-__decorate([
     (0, mongoose_1.Prop)({ type: String }),
     (0, swagger_1.ApiProperty)({
-        example: 'asdf@gmail.com',
-        description: 'User email',
+        example: "asdf@gmail.com",
+        description: "User email",
     }),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: String }),
     (0, swagger_1.ApiProperty)({
-        example: '홍길동',
-        description: 'User 이름',
+        example: "홍길동",
+        description: "User 이름",
     }),
     __metadata("design:type", String)
 ], User.prototype, "user_name", void 0);
@@ -65,7 +56,7 @@ exports.User = User = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true, versionKey: false })
 ], User);
 exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
-class UserInfo extends (0, swagger_1.PickType)(User, ['email', 'user_name']) {
+class UserInfo extends (0, swagger_1.PickType)(User, ["email", "user_name"]) {
     constructor(partial) {
         super();
         this.email = partial.email;

@@ -13,14 +13,14 @@ exports.FirebaseAuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const core_1 = require("@nestjs/core");
-let FirebaseAuthGuard = class FirebaseAuthGuard extends (0, passport_1.AuthGuard)('firebase-auth') {
+let FirebaseAuthGuard = class FirebaseAuthGuard extends (0, passport_1.AuthGuard)("firebase-auth") {
     reflector;
     constructor(reflector) {
         super();
         this.reflector = reflector;
     }
     canActivate(context) {
-        const isPublic = this.reflector.getAllAndOverride('public', [
+        const isPublic = this.reflector.getAllAndOverride("public", [
             context.getHandler(),
             context.getClass(),
         ]);
