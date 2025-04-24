@@ -1,5 +1,5 @@
-import { HttpStatus } from '@nestjs/common';
-import { CustomException } from 'src/common/exception/custom-exception';
+import { HttpStatus } from "@nestjs/common";
+import { CustomException } from "src/common/exception/custom-exception";
 
 export class IndexOutOfRangeException extends CustomException {
   constructor(preidx: number, nextidx: number, length: number) {

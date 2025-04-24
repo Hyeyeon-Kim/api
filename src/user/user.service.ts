@@ -16,7 +16,7 @@ export class UserService {
       .findOne(
         {
           uid: userid,
-        }
+        },
         // { _id: 0, User_name: 1, User_image: 1, status: 1 }, // 원하는 필드만 가져오기
       )
       .catch(() => {
@@ -49,11 +49,12 @@ export class UserService {
   async signin(token: string) {
     token = token.replace("Bearer ", "");
 
-    const firebaseUser = await auth()
-      .verifyIdToken(token, true)
-      .catch((err) => {
-        throw new UnauthorizedException(err.message);
-      });
+    const firebaseUser: { uid: string; email?: string; name?: string } =
+      await auth()
+        .verifyIdToken(token, true)
+        .catch((err: Error) => {
+          throw new UnauthorizedException(err.message);
+        });
 
     const user = await this.userModel.findOne({
       uid: firebaseUser.uid,
@@ -105,7 +106,7 @@ export class UserService {
           user_name: userInfo.user_name,
           email: userInfo.email,
         },
-      }
+      },
     );
   }
 }

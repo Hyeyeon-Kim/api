@@ -1,5 +1,5 @@
-import { HttpStatus } from '@nestjs/common';
-import { CustomException } from 'src/common/exception/custom-exception';
+import { HttpStatus } from "@nestjs/common";
+import { CustomException } from "src/common/exception/custom-exception";
 
 export class InvalidPreIndexException extends CustomException {
   constructor(preidx: number, id: string) {

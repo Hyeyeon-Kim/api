@@ -80,7 +80,7 @@ export class DiaryController {
   @ApiNotFoundResponse({ description: "다이어리를 찾을 수 없음" })
   deleteDiary(
     @GetUser() userDto: IUser,
-    @Param("id", StringToObjectIdPipe) diaryId: Types.ObjectId
+    @Param("id", StringToObjectIdPipe) diaryId: Types.ObjectId,
   ) {
     return this.diaryService.deleteDiary(userDto.id, diaryId);
   }
@@ -94,7 +94,7 @@ export class DiaryController {
   updateDiary(
     @GetUser() userDto: IUser,
     @Param("id", StringToObjectIdPipe) diaryId: Types.ObjectId,
-    @Body() data: Partial<DiaryInfo>
+    @Body() data: Partial<DiaryInfo>,
   ) {
     return this.diaryService.updateDiary(userDto.id, diaryId, data);
   }

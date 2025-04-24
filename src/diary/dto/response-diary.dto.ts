@@ -36,7 +36,7 @@ export class ResponseDiaryDto {
     data: Pick<
       DiaryDocument,
       "_id" | "title" | "content" | "modes" | "createdAt"
-    >
+    >,
   ) {
     this.id = data._id.toString();
     this.title = data.title;
@@ -113,7 +113,7 @@ export class SummaryDto {
       moods: MoodCountDto[];
       days: CalendarDayDto[];
     }>,
-    type: "weekly" | "calendar"
+    type: "weekly" | "calendar",
   ) {
     if (type === "weekly") {
       this.moods = partial.moods;
@@ -144,7 +144,7 @@ export class ResponseCalendarDto extends PickType(SummaryDto, [
       date: string;
       mood: string;
       id: string;
-    }[]
+    }[],
   ) {
     super();
     const days = data.map((d) => new CalendarDayDto(d));

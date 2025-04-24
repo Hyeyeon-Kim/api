@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Headers,
-  Patch,
-  Param,
-  Delete,
-} from "@nestjs/common";
+import { Controller, Post, Body, Headers, Patch, Delete } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -17,7 +9,6 @@ import {
 import { GetUser } from "./decorators/get-user.decorator";
 import { UserService } from "./user.service";
 import { UserInfo } from "./entities/user.schema";
-import { Types } from "mongoose";
 import IUser from "./interfaces/user.interface";
 import { Public } from "src/common/public.decorator";
 

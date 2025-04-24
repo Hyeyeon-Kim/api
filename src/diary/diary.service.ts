@@ -13,7 +13,7 @@ import moment from "moment-timezone";
 @Injectable()
 export class DiaryService {
   constructor(
-    @InjectModel(Diary.name) private readonly diaryModel: Model<Diary>
+    @InjectModel(Diary.name) private readonly diaryModel: Model<Diary>,
   ) {}
 
   async create(userId: Types.ObjectId, diaryInfo: DiaryInfo) {
@@ -49,7 +49,7 @@ export class DiaryService {
   async updateDiary(
     userId: Types.ObjectId,
     diaryId: Types.ObjectId,
-    diaryInfo: Partial<DiaryInfo>
+    diaryInfo: Partial<DiaryInfo>,
   ) {
     const diary = await this.diaryModel.findById(diaryId).exec();
     if (!diary) {
@@ -67,7 +67,7 @@ export class DiaryService {
           content: diaryInfo.content,
           day: diaryInfo.day,
         },
-      }
+      },
     );
   }
 
