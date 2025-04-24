@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { ApiProperty, PickType } from "@nestjs/swagger";
+import { PickType } from "@nestjs/swagger";
 import { HydratedDocument, SchemaTypes, Types } from "mongoose";
 
 export type DiaryDocument = HydratedDocument<Diary>;
