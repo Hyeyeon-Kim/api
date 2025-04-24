@@ -10,9 +10,12 @@ provider:
   stage: dev
   runtime: nodejs20.x
 
+deploymentBucket:
+  name: serverless-framework-deployments-us-east-2-58f98f42-79b4
+
 functions:
   main:
-    timeout: 30
+    timeout: 60
     handler: dist/lambda.handler
     events:
       - http:
