@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import serverlessExpress from "@codegenie/serverless-express";
 import { Callback, Context, Handler } from "aws-lambda";
 import { getApplication } from "./app";
@@ -15,7 +17,7 @@ async function bootstrap(): Promise<Handler> {
 export const handler: Handler = async (
   event: any,
   context: Context,
-  callback: Callback,
+  callback: Callback
 ) => {
   server = server ?? (await bootstrap());
   return server(event, context, callback);
