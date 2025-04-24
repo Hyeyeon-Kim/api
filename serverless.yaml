@@ -15,7 +15,7 @@ deploymentBucket:
 
 functions:
   main:
-    timeout: 60
+    timeout: 29
     handler: dist/lambda.handler
     events:
       - http:
