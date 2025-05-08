@@ -6,7 +6,16 @@ export class DiaryNotFoundException extends CustomException {
   constructor(id: Types.ObjectId) {
     super(
       `id(${id.toString()})로 만든 일기가 존재하지 않습니다`,
-      HttpStatus.NOT_FOUND,
+      HttpStatus.NOT_FOUND
+    );
+  }
+}
+
+export class UserDiaryNotFoundException extends CustomException {
+  constructor(id: Types.ObjectId) {
+    super(
+      `id(${id.toString()})계정으로 만든 일기가 존재하지 않습니다`,
+      HttpStatus.NOT_FOUND
     );
   }
 }

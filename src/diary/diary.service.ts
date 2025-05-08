@@ -4,16 +4,20 @@ import { Diary, DiaryInfo } from "./entities/diary.schema";
 import { Model, Types } from "mongoose";
 import {
   ResponseCalendarDto,
+  ResponseDiariesDto,
   ResponseDiaryDto,
   ResponseWeeklyDto,
 } from "./dto/response-diary.dto";
-import { DiaryNotFoundException } from "./exceptions/diary-not-found";
+import {
+  DiaryNotFoundException,
+  UserDiaryNotFoundException,
+} from "./exceptions/diary-not-found";
 import moment from "moment-timezone";
 
 @Injectable()
 export class DiaryService {
   constructor(
-    @InjectModel(Diary.name) private readonly diaryModel: Model<Diary>,
+    @InjectModel(Diary.name) private readonly diaryModel: Model<Diary>
   ) {}
 
   async create(userId: Types.ObjectId, diaryInfo: DiaryInfo) {
@@ -24,6 +28,30 @@ export class DiaryService {
       day: diaryInfo.day,
     });
     return response.id as string;
+  }
+
+  async getAll(userId: Types.ObjectId) {
+    const diaries = await this.diaryModel
+      .find({ writer: userId })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    if (!diaries || diaries.length === 0) {
+      throw new UserDiaryNotFoundException(userId);
+    }
+
+    const diaryDtos = diaries.map(
+      (d) =>
+        new ResponseDiaryDto({
+          _id: d._id,
+          title: d.title,
+          content: d.content,
+          modes: d.modes,
+          createdAt: d.createdAt,
+        })
+    );
+
+    return new ResponseDiariesDto(diaryDtos);
   }
 
   async getOne(diaryId: Types.ObjectId) {
@@ -49,7 +77,7 @@ export class DiaryService {
   async updateDiary(
     userId: Types.ObjectId,
     diaryId: Types.ObjectId,
-    diaryInfo: Partial<DiaryInfo>,
+    diaryInfo: Partial<DiaryInfo>
   ) {
     const diary = await this.diaryModel.findById(diaryId).exec();
     if (!diary) {
@@ -67,7 +95,7 @@ export class DiaryService {
           content: diaryInfo.content,
           day: diaryInfo.day,
         },
-      },
+      }
     );
   }
 

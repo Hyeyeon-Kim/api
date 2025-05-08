@@ -19,7 +19,7 @@ export class UserController {
   @Post()
   @Public()
   @ApiOperation({ summary: "유저 생성" })
-  @ApiCreatedResponse({ description: "유저 생성" })
+  @ApiCreatedResponse({ description: "유저 생성", type: String })
   signin(@Headers("authorization") authorization: string) {
     if (process.env.NODE_ENV === "test") {
       return this.userService.signinForTest();

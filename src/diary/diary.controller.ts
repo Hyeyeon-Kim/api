@@ -45,6 +45,13 @@ export class DiaryController {
     return this.diaryService.create(userDto.id, data);
   }
 
+  @Get()
+  @ApiOperation({ summary: "다어어리 전체 조회" })
+  @ApiOkResponse({ description: "다어어리 전체 조회", type: ResponseDiaryDto })
+  getAllDiary(@GetUser() userDto: IUser) {
+    return this.diaryService.getAll(userDto.id);
+  }
+
   @Get("/weekly")
   @ApiOperation({ summary: "주 단위의 감정 수치 보여주기 " })
   @ApiOkResponse({
@@ -80,7 +87,7 @@ export class DiaryController {
   @ApiNotFoundResponse({ description: "다이어리를 찾을 수 없음" })
   deleteDiary(
     @GetUser() userDto: IUser,
-    @Param("id", StringToObjectIdPipe) diaryId: Types.ObjectId,
+    @Param("id", StringToObjectIdPipe) diaryId: Types.ObjectId
   ) {
     return this.diaryService.deleteDiary(userDto.id, diaryId);
   }
@@ -94,7 +101,7 @@ export class DiaryController {
   updateDiary(
     @GetUser() userDto: IUser,
     @Param("id", StringToObjectIdPipe) diaryId: Types.ObjectId,
-    @Body() data: Partial<DiaryInfo>,
+    @Body() data: Partial<DiaryInfo>
   ) {
     return this.diaryService.updateDiary(userDto.id, diaryId, data);
   }

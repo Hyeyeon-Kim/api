@@ -36,13 +36,25 @@ export class ResponseDiaryDto {
     data: Pick<
       DiaryDocument,
       "_id" | "title" | "content" | "modes" | "createdAt"
-    >,
+    >
   ) {
     this.id = data._id.toString();
     this.title = data.title;
     this.content = data.content;
     this.modes = data.modes;
     this.createdAt = data.createdAt;
+  }
+}
+
+export class ResponseDiariesDto {
+  @ApiProperty({
+    type: [ResponseDiaryDto],
+    description: "사용자 다이어리 전체 목록",
+  })
+  readonly diaries: ResponseDiaryDto[];
+
+  constructor(diaries: ResponseDiaryDto[]) {
+    this.diaries = diaries;
   }
 }
 
@@ -113,7 +125,7 @@ export class SummaryDto {
       moods: MoodCountDto[];
       days: CalendarDayDto[];
     }>,
-    type: "weekly" | "calendar",
+    type: "weekly" | "calendar"
   ) {
     if (type === "weekly") {
       this.moods = partial.moods;
@@ -144,7 +156,7 @@ export class ResponseCalendarDto extends PickType(SummaryDto, [
       date: string;
       mood: string;
       id: string;
-    }[],
+    }[]
   ) {
     super();
     const days = data.map((d) => new CalendarDayDto(d));
