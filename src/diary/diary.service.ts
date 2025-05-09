@@ -13,21 +13,52 @@ import {
   UserDiaryNotFoundException,
 } from "./exceptions/diary-not-found";
 import moment from "moment-timezone";
+import { TmpService } from "src/tmp/tmp.service";
 
 @Injectable()
 export class DiaryService {
   constructor(
-    @InjectModel(Diary.name) private readonly diaryModel: Model<Diary>
+    @InjectModel(Diary.name) private readonly diaryModel: Model<Diary>,
+    private readonly genai: TmpService
   ) {}
 
   async create(userId: Types.ObjectId, diaryInfo: DiaryInfo) {
-    const response = await this.diaryModel.create({
+    const diary = await this.diaryModel.create({
       writer: userId, // uid를 추가하여 사용자와 연결
       title: diaryInfo.title,
       content: diaryInfo.content,
       day: diaryInfo.day,
     });
-    return response.id as string;
+
+    const prompt = `
+    아래 지시사항을 정확히 따라 글의 감정을 분석해주세요.
+    ■ 감정 카테고리 (반드시 아래 6개 중에서만 선택)
+    - 놀람
+    - 슬픔
+    - 중립
+    - 행복
+    - 분노
+    - 공포
+
+    ■ 출력 형식
+    - JSON 배열: ["감정1", "감정2", …]
+    - 해당 카테고리에 맞는 감정이 없거나, 제목·본문이 비어 있거나 “ㅇㄴㅇㄴㅇ” 같은 대체 텍스트만 있으면 빈 배열: []
+    - **출력 결과에는 어떠한 개행문자(\\n)나 공백도 포함하지 않고, 정확히 배열 문자만 출력할 것.**
+
+    ■ 금지 사항
+    - 감정 외 다른 텍스트나 설명을 하지 말 것.
+    - 배열 외의 포맷(문장, 표 등) 사용 금지.
+    
+
+    ---
+    Title: ${diaryInfo.title}
+    Content: ${diaryInfo.content}
+    `.trim();
+
+    const aiReply = await this.genai.generateText(prompt);
+
+    diary.modes = aiReply;
+    diary.save();
   }
 
   async getAll(userId: Types.ObjectId) {

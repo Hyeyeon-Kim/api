@@ -4,6 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { DiaryModule } from "./diary/diary.module";
+import { TmpModule } from './tmp/tmp.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { DiaryModule } from "./diary/diary.module";
     UserModule,
     AuthModule,
     DiaryModule,
+    TmpModule,
   ],
   controllers: [],
   providers: [],
