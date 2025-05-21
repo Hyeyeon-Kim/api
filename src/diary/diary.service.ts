@@ -6,6 +6,7 @@ import {
   ResponseCalendarDto,
   ResponseDiariesDto,
   ResponseDiaryDto,
+  ResponseTotalMoodDto,
   ResponseWeeklyDto,
 } from "./dto/response-diary.dto";
 import {
@@ -184,5 +185,30 @@ export class DiaryService {
     });
 
     return new ResponseCalendarDto(summaryData);
+  }
+
+  async getTotal(userId: Types.ObjectId) {
+    const diaries = await this.diaryModel
+      .find({ writer: userId })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    const map = new Map<string, number>();
+    let totalCount = 0;
+
+    diaries.forEach((d) => {
+      d.modes.forEach((mood) => {
+        map.set(mood, (map.get(mood) || 0) + 1);
+        totalCount += 1;
+      });
+    });
+
+    const summaryData = Array.from(map.entries()).map(([mood, cnt]) => ({
+      mood,
+      cnt,
+      ratio: Number(((cnt / totalCount) * 100).toFixed(2)),
+    }));
+
+    return new ResponseTotalMoodDto(summaryData, totalCount);
   }
 }

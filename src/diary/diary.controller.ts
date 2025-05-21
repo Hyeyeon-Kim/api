@@ -25,6 +25,7 @@ import IUser from "src/user/interfaces/user.interface";
 import {
   ResponseCalendarDto,
   ResponseDiaryDto,
+  ResponseTotalMoodDto,
   ResponseWeeklyDto,
 } from "./dto/response-diary.dto";
 import { Types } from "mongoose";
@@ -70,6 +71,16 @@ export class DiaryController {
   })
   getCalendar(@GetUser() userDto: IUser) {
     return this.diaryService.getCalendar(userDto.id);
+  }
+
+  @Get("/total")
+  @ApiOperation({ summary: "감정 통계 보여주기 " })
+  @ApiOkResponse({
+    description: "감정 통계 보여주기 ",
+    type: ResponseTotalMoodDto,
+  })
+  getTotal(@GetUser() userDto: IUser) {
+    return this.diaryService.getTotal(userDto.id);
   }
 
   @Get(":id")

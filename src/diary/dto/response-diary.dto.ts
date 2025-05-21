@@ -164,3 +164,42 @@ export class ResponseCalendarDto extends PickType(SummaryDto, [
     Object.assign(this, summary);
   }
 }
+
+export class MoodTotalDto {
+  @ApiProperty({ example: "슬픔", description: "감정 이름" })
+  readonly mood: string;
+
+  @ApiProperty({ example: 12, description: "감정 등장 횟수" })
+  readonly cnt: number;
+
+  @ApiProperty({ example: 35.29, description: "전체 중 이 감정 비율 (%)" })
+  readonly ratio: number;
+
+  constructor(partial: { mood: string; cnt: number; ratio: number }) {
+    this.mood = partial.mood;
+    this.cnt = partial.cnt;
+    this.ratio = partial.ratio;
+  }
+}
+
+export class ResponseTotalMoodDto {
+  @ApiProperty({
+    type: [MoodTotalDto],
+    description: "감정별 등장 횟수 및 비율",
+  })
+  readonly moods: MoodTotalDto[];
+
+  @ApiProperty({
+    example: 34,
+    description: "전체 감정 태그 수 (모든 감정 등장 횟수 합)",
+  })
+  readonly total: number;
+
+  constructor(
+    data: { mood: string; cnt: number; ratio: number }[],
+    total: number
+  ) {
+    this.moods = data.map((d) => new MoodTotalDto(d));
+    this.total = total;
+  }
+}
