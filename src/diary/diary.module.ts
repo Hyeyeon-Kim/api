@@ -12,5 +12,6 @@ import { TmpModule } from "src/tmp/tmp.module";
   ],
   controllers: [DiaryController],
   providers: [DiaryService],
+  exports: [DiaryService],
 })
 export class DiaryModule {}

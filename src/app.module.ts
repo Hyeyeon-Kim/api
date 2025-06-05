@@ -5,6 +5,7 @@ import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { DiaryModule } from "./diary/diary.module";
 import { TmpModule } from './tmp/tmp.module';
+import { MusicModule } from './music/music.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TmpModule } from './tmp/tmp.module';
     AuthModule,
     DiaryModule,
     TmpModule,
+    MusicModule,
   ],
   controllers: [],
   providers: [],

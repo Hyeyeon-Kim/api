@@ -10,11 +10,11 @@ import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 @Injectable()
 export class FirebaseAuthStrategy extends PassportStrategy(
   Strategy,
-  "firebase-auth",
+  "firebase-auth"
 ) {
   constructor(
     private readonly reflector: Reflector,
-    private readonly userservice: UserService,
+    private readonly userservice: UserService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
