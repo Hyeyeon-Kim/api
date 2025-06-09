@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Diary, DiaryInfo } from "./entities/diary.schema";
 import { Model, Types } from "mongoose";
@@ -14,14 +18,27 @@ import {
   UserDiaryNotFoundException,
 } from "./exceptions/diary-not-found";
 import moment from "moment-timezone";
-import { TmpService } from "src/tmp/tmp.service";
+import { UploadService } from "src/upload/upload.service";
+import axios from "axios";
 
 @Injectable()
 export class DiaryService {
+  private readonly EMOTION_API_URL =
+    "https://6byhfli5tacbf65upmhkwg3bx40rewah.lambda-url.us-east-2.on.aws/";
+
   constructor(
     @InjectModel(Diary.name) private readonly diaryModel: Model<Diary>,
-    private readonly genai: TmpService
+    private readonly uploadService: UploadService
   ) {}
+
+  async createWithStt(userId: Types.ObjectId, file) {
+    const diary = await this.diaryModel.create({
+      writer: userId,
+    });
+
+    const path = userId.toString() + "/" + diary.id;
+    const updatedata = await this.uploadService.create(path, file);
+  }
 
   async create(userId: Types.ObjectId, diaryInfo: DiaryInfo) {
     const diary = await this.diaryModel.create({
@@ -31,35 +48,28 @@ export class DiaryService {
       day: diaryInfo.day,
     });
 
-    const prompt = `
-    아래 지시사항을 정확히 따라 글의 감정을 분석해주세요.
-    ■ 감정 카테고리 (반드시 아래 6개 중에서만 선택)
-    - 놀람
-    - 슬픔
-    - 중립
-    - 행복
-    - 분노
-    - 공포
+    try {
+      // 2) Lambda에 text 필드로 content 전송
+      const resp = await axios.post(this.EMOTION_API_URL, {
+        text: diaryInfo.content,
+      });
 
-    ■ 출력 형식
-    - JSON 배열: ["감정1", "감정2", …]
-    - 해당 카테고리에 맞는 감정이 없거나, 제목·본문이 비어 있거나 “ㅇㄴㅇㄴㅇ” 같은 대체 텍스트만 있으면 빈 배열: []
-    - **출력 결과에는 어떠한 개행문자(\\n)나 공백도 포함하지 않고, 정확히 배열 문자만 출력할 것.**
+      // 3) predictedEmotion 추출
+      const { predictedEmotion } = resp.data;
+      if (!predictedEmotion) {
+        throw new Error("predictedEmotion이 응답에 없습니다.");
+      }
 
-    ■ 금지 사항
-    - 감정 외 다른 텍스트나 설명을 하지 말 것.
-    - 배열 외의 포맷(문장, 표 등) 사용 금지.
-    
+      // 4) Mongoose 다큐먼트에 modes로 저장
+      diary.modes = predictedEmotion;
+      await diary.save();
 
-    ---
-    Title: ${diaryInfo.title}
-    Content: ${diaryInfo.content}
-    `.trim();
-
-    const aiReply = await this.genai.generateText(prompt);
-
-    diary.modes = aiReply;
-    diary.save();
+      return diary;
+    } catch (err) {
+      // 에러 시 로깅 및 예외 처리
+      console.error("Emotion API 호출 오류:", err);
+      throw new BadRequestException("감정 분석에 실패했습니다.");
+    }
   }
 
   async getAll(userId: Types.ObjectId) {

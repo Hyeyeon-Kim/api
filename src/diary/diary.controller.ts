@@ -6,6 +6,8 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
@@ -31,6 +33,7 @@ import {
 import { Types } from "mongoose";
 import { StringToObjectIdPipe } from "src/common/string-to-objectId-pipe";
 import { DiaryInfo } from "./entities/diary.schema";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @ApiTags("Diary")
 @Controller("diarys")
@@ -51,6 +54,14 @@ export class DiaryController {
   @ApiOkResponse({ description: "다어어리 전체 조회", type: ResponseDiaryDto })
   getAllDiary(@GetUser() userDto: IUser) {
     return this.diaryService.getAll(userDto.id);
+  }
+
+  @UseInterceptors(FileInterceptor("file"))
+  @Post("/stt")
+  @ApiOperation({ summary: "다어어리 생성" })
+  @ApiCreatedResponse({ description: "다어어리 생성", type: String })
+  creatediaryWithStt(@GetUser() userDto: IUser, @UploadedFile() file) {
+    return this.diaryService.createWithStt(userDto.id, file);
   }
 
   @Get("/weekly")
