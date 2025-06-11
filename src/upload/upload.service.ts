@@ -25,7 +25,7 @@ export class UploadService {
       Bucket: this.configService.get("AWS_BUCKET_NAME"),
       Key: `${parentDirectory}/${convertedName}`,
       Body: file.buffer,
-      ContentType: `image/${extension}`,
+      ContentType: `file.mimetype`,
     };
     const data = await this.s3
       .upload(params)
