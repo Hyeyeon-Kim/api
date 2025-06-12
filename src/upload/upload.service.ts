@@ -25,7 +25,7 @@ export class UploadService {
     // 잘못된 mimetype이면 강제로 매핑
     if (extension === "mp3") mimeType = "audio/mpeg";
     if (extension === "wav") mimeType = "audio/wav";
-    if (extension === "m4a") mimeType = "audio/mp4"; // 일부 시스템에서는 audio/aac 쓰기도 함
+    if (extension === "m4a") mimeType = "audio/mp4";
 
     const convertedName = randomUUID() + "." + extension;
 
