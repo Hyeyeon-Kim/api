@@ -20,22 +20,13 @@ export class UploadService {
 
   async create(parentDirectory: string, file) {
     const extension = file.originalname.split(".").pop();
-    let mimeType = file.mimetype;
-
-    // 잘못된 mimetype이면 강제로 매핑
-    if (extension === "mp3") mimeType = "audio/mpeg";
-    if (extension === "wav") mimeType = "audio/wav";
-    if (extension === "m4a") mimeType = "audio/mp4";
-
     const convertedName = randomUUID() + "." + extension;
-
     const params = {
       Bucket: this.configService.get("AWS_BUCKET_NAME"),
       Key: `${parentDirectory}/${convertedName}`,
       Body: file.buffer,
-      ContentType: mimeType,
+      ContentType: file.mimetype,
     };
-
     const data = await this.s3
       .upload(params)
       .promise()
