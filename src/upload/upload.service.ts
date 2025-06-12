@@ -26,7 +26,9 @@ export class UploadService {
       Key: `${parentDirectory}/${convertedName}`,
       Body: file.buffer,
       ContentType: file.mimetype,
+      ACL: "public-read", // 선택: URL로 접근할 수 있게 할 경우
     };
+
     const data = await this.s3
       .upload(params)
       .promise()

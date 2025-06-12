@@ -61,6 +61,9 @@ export class DiaryController {
   @ApiOperation({ summary: "다어어리 생성" })
   @ApiCreatedResponse({ description: "다어어리 생성", type: String })
   creatediaryWithStt(@GetUser() userDto: IUser, @UploadedFile() file) {
+    console.log("mimetype:", file.mimetype); // 예: audio/mpeg
+    console.log("Mimetype:", file.mimetype);
+    console.log("Buffer length:", file.buffer?.length);
     return this.diaryService.createWithStt(userDto.id, file);
   }
 
