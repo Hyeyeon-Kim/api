@@ -20,13 +20,20 @@ export class UploadService {
 
   async create(parentDirectory: string, file) {
     const extension = file.originalname.split(".").pop();
+    let mimeType = file.mimetype;
+
+    // 잘못된 mimetype이면 강제로 매핑
+    if (extension === "mp3") mimeType = "audio/mpeg";
+    if (extension === "wav") mimeType = "audio/wav";
+    if (extension === "m4a") mimeType = "audio/mp4"; // 일부 시스템에서는 audio/aac 쓰기도 함
+
     const convertedName = randomUUID() + "." + extension;
+
     const params = {
       Bucket: this.configService.get("AWS_BUCKET_NAME"),
       Key: `${parentDirectory}/${convertedName}`,
       Body: file.buffer,
-      ContentType: file.mimetype,
-      ACL: "public-read", // 선택: URL로 접근할 수 있게 할 경우
+      ContentType: mimeType,
     };
 
     const data = await this.s3
